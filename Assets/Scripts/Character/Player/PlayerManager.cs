@@ -17,6 +17,11 @@ namespace JBV
         {
             base.Update();
 
+            if (!IsOwner)
+            {
+                return;
+            }
+
             playerLocomotionManager.HandleAllMovement();
         }
     }
