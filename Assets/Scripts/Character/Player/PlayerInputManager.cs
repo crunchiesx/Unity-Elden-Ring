@@ -10,11 +10,16 @@ namespace JBV
     {
         public static PlayerInputManager Instance { get; private set; }
 
+        [Header("Movement Input")]
+        [SerializeField] private Vector2 movementInput;
         public float verticalInput;
         public float horizontalInput;
         public float moveAmount;
 
-        [SerializeField] private Vector2 movementInput;
+        [Header("Camera Movement Input")]
+        [SerializeField] private Vector2 cameraInput;
+        public float cameraVerticalInput;
+        public float cameraHorizontalInput;
 
         private PlayerControls playerControls;
 
@@ -48,6 +53,11 @@ namespace JBV
                 {
                     movementInput = ctx.ReadValue<Vector2>();
                 };
+
+                playerControls.PlayerCamera.Movement.performed += ctx =>
+                {
+                    cameraInput = ctx.ReadValue<Vector2>();
+                };
             }
 
             playerControls.Enable();
@@ -79,15 +89,21 @@ namespace JBV
 
         private void Update()
         {
-            HandleMovementInput();
+            HandlePlayerMovementInput();
+            HandleCameraMovementInput();
         }
 
         private void OnSceneChange(Scene oldScene, Scene newScene)
         {
-            Instance.enabled = newScene.buildIndex == WorldSaveGameManager.Instance.GetWorldSceneIndex();
+            bool isWorldScene = newScene.buildIndex == WorldSaveGameManager.Instance.GetWorldSceneIndex();
+
+            Instance.enabled = isWorldScene;
+
+            Cursor.visible = isWorldScene;
+            Cursor.lockState = isWorldScene ? CursorLockMode.Locked : CursorLockMode.None;
         }
 
-        private void HandleMovementInput()
+        private void HandlePlayerMovementInput()
         {
             verticalInput = movementInput.y;
             horizontalInput = movementInput.x;
@@ -102,6 +118,12 @@ namespace JBV
             {
                 moveAmount = 1f;
             }
+        }
+
+        private void HandleCameraMovementInput()
+        {
+            cameraVerticalInput = cameraInput.y;
+            cameraHorizontalInput = cameraInput.x;
         }
     }
 }

@@ -44,5 +44,10 @@ namespace JBV
                 );
             }
         }
+
+        protected virtual void LateUpdate()
+        {
+
+        }
     }
 }
